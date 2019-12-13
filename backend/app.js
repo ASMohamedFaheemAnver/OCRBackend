@@ -1,10 +1,23 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const app = express();
 
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useUnifiedTopology', true);
+
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+
+mongoose.connect('mongodb://localhost:27017/ocr-application')
+.then(()=>{
+    console.log('Connected to mongoDB!');
+}).catch((err)=>{
+    console.log('Error occurred : ' + err);
+});
 
 app.get('/api/users', (req, res, next)=>{
     let users = [
