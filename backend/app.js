@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const User = require('./models/user');
 
 const app = express();
 
@@ -19,15 +20,23 @@ mongoose.connect('mongodb://localhost:27017/ocr-application')
     console.log('Error occurred : ' + err);
 });
 
+app.post('/api/users', (req, res, next)=>{
+    const user = new User({
+        user_name: req.body.user_name,
+        password: req.body.password
+    });
+    user.save();
+    console.log(user);
+    res.status(201).json({
+        message: '201K SUCCESS!'
+    });
+});
+
 app.get('/api/users', (req, res, next)=>{
-    let users = [
-        {
-            id: 1,
-            user_name: 'jstrfaheem065@gmail.come',
-            password: '*74362@?'
-        }
-    ];
-    res.json(users);
+    User.find().then((users)=>{
+        res.json(users);
+        console.log(users);
+    });
 });
 
 app.get('/', (req, res, next)=>{
