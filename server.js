@@ -1,6 +1,5 @@
 const server = require('http');
+const app = require('./backend/app');
 
-server.createServer((req, res, err)=>{
-    res.writeHead('200', {'Content-Type': 'text/plain'});
-    res.end('Hello World!');
-}).listen("3000");
+console.log('OCR RESTAPI UP AND RUNNING!');
+server.createServer(app).listen("3000");
