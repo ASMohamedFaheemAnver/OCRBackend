@@ -50,9 +50,12 @@ app.post('/api/users', (req, res, next) => {
 });
 
 app.get('/api/users', (req, res, next) => {
-    User.findOne({ user_name: req.body.user_name, password: req.body.password }).then((user) => {
+    // We don't use params!
+    // console.log(req.query);
+    // https://stackoverflow.com/questions/6912584/how-to-get-get-query-string-variables-in-express-js-on-node-js
+    User.findOne({ user_name: req.query.user_name, password: req.query.password}).then((user) => {
         if (user) {
-            return res.status(200).json({ message: "CONGRATULATIONS!", user: user });
+            return res.status(200).json({ message: "CONGRATULATIONS!", id: user._id });
             // console.log(user);
         }
         res.status(404).json({ message: "USER NOT FOUND!" });
