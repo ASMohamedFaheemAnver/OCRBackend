@@ -20,6 +20,15 @@ mongoose.connect('mongodb://localhost:27017/ocr-application')
         console.log('Error occurred : ' + err);
     });
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept');
+        res.setHeader('Access-Control-Allow-Method',
+        'GET, POST, PATCH, DELETE, OPTIONS');
+    next();
+});
+
 app.post('/api/users', (req, res, next) => {
 
     User.findOne({ user_name: req.body.user_name }).then((ures) => {
