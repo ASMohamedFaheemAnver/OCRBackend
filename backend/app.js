@@ -11,35 +11,46 @@ mongoose.set('useUnifiedTopology', true);
 
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 mongoose.connect('mongodb://localhost:27017/ocr-application')
-.then(()=>{
-    console.log('Connected to mongoDB!');
-}).catch((err)=>{
-    console.log('Error occurred : ' + err);
+    .then(() => {
+        // console.log('Connected to mongoDB!');
+    }).catch((err) => {
+        console.log('Error occurred : ' + err);
+    });
+
+app.post('/api/users', (req, res, next) => {
+
+    User.findOne({ user_name: req.body.user_name }).then((ures) => {
+        if (!ures) {
+            const user = new User({
+                user_name: req.body.user_name,
+                password: req.body.password
+            });
+            user.save();
+            // console.log(user);
+            return res.status(201).json({
+                message: '201K SUCCESS!',
+                user: user
+            });
+        }
+
+        res.status(403).json({ message: "ALREADY A USER EXIST!" });
+    });
 });
 
-app.post('/api/users', (req, res, next)=>{
-    const user = new User({
-        user_name: req.body.user_name,
-        password: req.body.password
-    });
-    user.save();
-    console.log(user);
-    res.status(201).json({
-        message: '201K SUCCESS!'
+app.get('/api/users', (req, res, next) => {
+    User.findOne({ user_name: req.body.user_name, password: req.body.password }).then((user) => {
+        if (user) {
+            return res.status(200).json({ message: "CONGRATULATIONS!", user: user });
+            // console.log(user);
+        }
+        res.status(404).json({ message: "USER NOT FOUND!" });
     });
 });
 
-app.get('/api/users', (req, res, next)=>{
-    User.find().then((users)=>{
-        res.json(users);
-        console.log(users);
-    });
-});
-
-app.get('/', (req, res, next)=>{
+app.get('/', (req, res, next) => {
     res.send('200K, OCR RESTAPI UP AND RUNNING!');
 });
 
