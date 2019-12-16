@@ -4,10 +4,33 @@ const mongoose = require('mongoose');
 const User = require('./models/user');
 
 const app = express();
+const multer = require('multer');
+
+const MIME_TYPE_MAP = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg'
+};
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb)=>{
+        const isValid = MIME_TYPE_MAP[file.mimetype];
+        let error = null;
+        if(!isValid){
+            error = 'INVALID FILE TYPE!';
+        }
+
+        cb(error, 'backend/images');
+    },
+    filename: (req, file, cb)=>{
+        const name = file.originalname.toLowerCase().split(' ').join('-');
+        const ext = MIME_TYPE_MAP[file.mimetype];
+        cb(null, name + '-' + Date.now() + '.' + ext);
+    }
+});
 
 
 app.use(bodyParser.json());
@@ -73,6 +96,10 @@ app.delete('/api/users/', (req, res, next)=>{
 
 app.put('/api/users', (req, res, next)=>{
     User.updateOne();
+});
+
+app.post('/api/results', multer({storage: storage}).single('image'), (req, res, next)=>{
+
 });
 
 app.get('/', (req, res, next) => {
