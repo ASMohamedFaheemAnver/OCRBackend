@@ -62,6 +62,19 @@ app.get('/api/users', (req, res, next) => {
     });
 });
 
+app.delete('/api/users/', (req, res, next)=>{
+    User.deleteOne({_id: req.query.id, user_name: req.query.user_name, password: req.query.password}).then(del=>{
+        if(del.n){
+            return res.status(201).send({message: '201K, SUCCESS!'})
+        }
+        res.status(404).send({message: '404, NOT FOUND!'});
+    });
+});
+
+app.put('/api/users', (req, res, next)=>{
+    User.updateOne();
+});
+
 app.get('/', (req, res, next) => {
     res.send('200K, OCR RESTAPI UP AND RUNNING!');
 });
