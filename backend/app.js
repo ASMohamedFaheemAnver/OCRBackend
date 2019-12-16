@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const User = require('./models/user');
+const path = require('path');
+const Result = require('./models/result');
 
 const app = express();
 const multer = require('multer');
@@ -14,6 +16,8 @@ const MIME_TYPE_MAP = {
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
+
+app.use('/images', express.static(path.join('backend/images')));
 
 const storage = multer.diskStorage({
     destination: (req, file, cb)=>{
@@ -99,7 +103,24 @@ app.put('/api/users', (req, res, next)=>{
 });
 
 app.post('/api/results', multer({storage: storage}).single('image'), (req, res, next)=>{
+    const url = req.protocol + '://' + req.get('host');
+    // console.log(req.body.result);
+    let imagePath = url + '/images/' + req.file.filename;
+    // console.log(imagePath);
+    const result = new Result({
+        image_path: imagePath,
+        image_text: req.body.result 
+    });
+    result.save().then(result=>{
+        res.json({});
+    });
+});
 
+app.get('/api/results', (req, res, next)=>{
+    Result.find().then(results=>{
+        console.log(results);
+        res.json(results);
+    });
 });
 
 app.get('/', (req, res, next) => {
