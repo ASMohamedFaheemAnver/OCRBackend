@@ -32,7 +32,8 @@ const storage = multer.diskStorage({
         cb(error, 'backend/images');
     },
     filename: (req, file, cb) => {
-        const name = file.originalname.toLowerCase().split(' ').join('-');
+        let name = file.originalname.toLowerCase().split(' ').join('-');
+        name = name.substring(0, name.indexOf('.'));
         const ext = MIME_TYPE_MAP[file.mimetype];
         cb(null, name + '-' + Date.now() + '.' + ext);
     }
@@ -107,6 +108,17 @@ app.get('/api/users', (req, res, next) => {
     });
 });
 
+app.get('/api/user_id', (req, res, next)=>{
+    // console.log(req);
+    User.findOne({_id: req.query.user_id}).then(user=>{
+        if(user){
+            return res.status(200).send({message: "ONGRATULATIONS!"});
+        }
+    }, err=>{
+        return res.status(404).send({message: '404, NOT FOUND!'});
+    });
+});
+
 app.delete('/api/users/', (req, res, next) => {
     User.deleteOne({ _id: req.query.id, user_name: req.query.user_name, password: req.query.password }).then(del => {
         if (del.n) {
@@ -138,7 +150,8 @@ app.post('/api/results', multer({ storage: storage }).single('image'), (req, res
     // });
     const result = new Result({
         image_path: imagePath,
-        image_text: req.body.result
+        image_text: req.body.result,
+        user_id: req.body.user_id
     });
     result.save().then(result => {
         res.json({});
@@ -146,6 +159,13 @@ app.post('/api/results', multer({ storage: storage }).single('image'), (req, res
 });
 
 app.get('/api/results', (req, res, next) => {
+    Result.find({user_id: req.query.user_id}).then(results => {
+        // console.log(results);
+        res.json(results);
+    });
+});
+
+app.get('/api/image_results', (req, res, next) => {
     Result.find().then(results => {
         // console.log(results);
         res.json(results);
