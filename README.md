@@ -1,2 +1,3 @@
 # OCR_BACKEND
-BACK END FOR [OCR APPLICAITON!](https://github.com/ASMohamedRiFaheemAnver/OCRTextRecognizationApplication.git)
+BACKEND FOR [OCR WEB](https://github.com/ASMohamedRiFaheemAnver/OCRTextRecognizationApplication.git)
+AND [OCR MOBILE!](https://github.com/ASMohamedRiFaheemAnver/OCRMobile)
