@@ -5,7 +5,7 @@ const User = require('./models/user');
 const path = require('path');
 const Result = require('./models/result');
 const tesseract = require('tesseract.js');
-
+const fs = require('fs');
 const app = express();
 const multer = require('multer');
 
@@ -70,7 +70,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers',
         'Origin, X-Requested-With, Content-Type, Accept');
-    res.setHeader('Access-Control-Allow-Method',
+    res.setHeader('Access-Control-Allow-Methods',
         'GET, POST, PATCH, DELETE, OPTIONS');
     next();
 });
@@ -108,14 +108,14 @@ app.get('/api/users', (req, res, next) => {
     });
 });
 
-app.get('/api/user_id', (req, res, next)=>{
+app.get('/api/user_id', (req, res, next) => {
     // console.log(req);
-    User.findOne({_id: req.query.user_id}).then(user=>{
-        if(user){
-            return res.status(200).send({message: "ONGRATULATIONS!"});
+    User.findOne({ _id: req.query.user_id }).then(user => {
+        if (user) {
+            return res.status(200).send({ message: "ONGRATULATIONS!" });
         }
-    }, err=>{
-        return res.status(404).send({message: '404, NOT FOUND!'});
+    }, err => {
+        return res.status(404).send({ message: '404, NOT FOUND!' });
     });
 });
 
@@ -132,11 +132,11 @@ app.put('/api/users', (req, res, next) => {
     User.updateOne();
 });
 
-app.post('/api/result', multer({storage: tempstorage}).single('image') ,(req, res, next) => {
+app.post('/api/result', multer({ storage: tempstorage }).single('image'), (req, res, next) => {
     const url = req.protocol + '://' + req.get('host');
     let imagePath = url + '/tempimg/' + req.file.filename;
-    tesseract.recognize(imagePath, 'eng').then(({data : {text}})=>{
-        res.json({message: 'SUCCESS!',image_text: text});
+    tesseract.recognize(imagePath, 'eng').then(({ data: { text } }) => {
+        res.json({ message: 'SUCCESS!', image_text: text });
     });
 });
 
@@ -159,7 +159,7 @@ app.post('/api/results', multer({ storage: storage }).single('image'), (req, res
 });
 
 app.get('/api/results', (req, res, next) => {
-    Result.find({user_id: req.query.user_id}).then(results => {
+    Result.find({ user_id: req.query.user_id }).then(results => {
         // console.log(results);
         res.json(results);
     });
@@ -169,6 +169,17 @@ app.get('/api/image_results', (req, res, next) => {
     Result.find().then(results => {
         // console.log(results);
         res.json(results);
+    });
+});
+
+app.delete('/api/results/:id/:image_url', (req, res, next) => {
+    fs.unlink('backend/images/' + req.params.image_url, (err) => {
+        if (err) {
+            console.log(err);
+        }
+        Result.deleteOne({ _id: req.params.id }).then(result => {
+            res.status(201).json({ message: 'SUCCESS!' });
+        });
     });
 });
 
