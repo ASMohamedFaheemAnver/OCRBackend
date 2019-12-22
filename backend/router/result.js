@@ -48,7 +48,7 @@ const tempstorage = multer.diskStorage({
 router.post('/api/result', multer({ storage: tempstorage }).single('image'), (req, res, next) => {
     const url = req.protocol + '://' + req.get('host');
     let imagePath = url + '/tempimg/' + req.file.filename;
-    tesseract.recognize(imagePath, 'eng').then(({ data: { text } }) => {
+    tesseract.recognize(imagePath, 'eng', {logger: m => console.log(m)}).then(({ data: { text } }) => {
         res.json({ message: 'SUCCESS!', image_text: text });
     });
 });
@@ -67,7 +67,7 @@ router.post('/api/results', multer({ storage: storage }).single('image'), (req, 
         user_id: req.body.user_id
     });
     result.save().then(result => {
-        res.json({});
+        res.json({message: "SUCCESS!"});
     });
 });
 
