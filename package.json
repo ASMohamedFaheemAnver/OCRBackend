@@ -10,8 +10,10 @@
   "author": "AS MOHAMED FAHEEM ANVER",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.8.1",
     "multer": "^1.4.2",
     "tesseract.js": "^2.0.0-beta.2"
