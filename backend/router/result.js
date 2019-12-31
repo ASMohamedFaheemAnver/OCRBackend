@@ -4,6 +4,7 @@ const Result = require('../models/result');
 const tesseract = require('tesseract.js');
 const fs = require('fs');
 const multer = require('multer');
+const checkAuth = require('../middleware/check-auth');
 
 const MIME_TYPE_MAP = {
     'image/png': 'png',
@@ -53,7 +54,7 @@ router.post('/api/result', multer({ storage: tempstorage }).single('image'), (re
     });
 });
 
-router.post('/api/results', multer({ storage: storage }).single('image'), (req, res, next) => {
+router.post('/api/results', checkAuth, multer({ storage: storage }).single('image'), (req, res, next) => {
     const url = req.protocol + '://' + req.get('host');
     // console.log(req.body.result);
     let imagePath = url + '/images/' + req.file.filename;
@@ -71,7 +72,7 @@ router.post('/api/results', multer({ storage: storage }).single('image'), (req, 
     });
 });
 
-router.get('/api/results', (req, res, next) => {
+router.get('/api/results', checkAuth, (req, res, next) => {
     Result.find({ user_id: req.query.user_id }).then(results => {
         // console.log(results);
         res.json(results);
@@ -85,7 +86,7 @@ router.get('/api/image_results', (req, res, next) => {
     });
 });
 
-router.delete('/api/results/:id/:image_url', (req, res, next) => {
+router.delete('/api/results/:id/:image_url', checkAuth, (req, res, next) => {
     fs.unlink('backend/images/' + req.params.image_url, (err) => {
         if (err) {
             console.log(err);
